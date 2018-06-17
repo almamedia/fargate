@@ -20,7 +20,7 @@ const (
 	version = "0.2.3"
 
 	defaultClusterName = "fargate"
-	defaultRegion      = "us-east-1"
+	defaultRegion      = "eu-west-1"
 
 	mebibytesInGibibyte   = 1024
 	protocolHttp          = "HTTP"
