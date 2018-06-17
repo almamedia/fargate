@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/ec2"
-	"github.com/jpignata/fargate/elbv2"
+	"github.com/almamedia/fargate/acm"
+	"github.com/almamedia/fargate/ec2"
+	"github.com/almamedia/fargate/elbv2"
 	"github.com/spf13/cobra"
 )
 

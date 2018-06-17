@@ -7,8 +7,8 @@ import (
 	"time"
 
 	lru "github.com/hashicorp/golang-lru"
-	CWL "github.com/jpignata/fargate/cloudwatchlogs"
-	"github.com/jpignata/fargate/console"
+	CWL "github.com/almamedia/fargate/cloudwatchlogs"
+	"github.com/almamedia/fargate/console"
 )
 
 const (

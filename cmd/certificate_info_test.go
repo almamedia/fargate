@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/acm/mock/client"
-	"github.com/jpignata/fargate/cmd/mock"
+	"github.com/almamedia/fargate/acm"
+	"github.com/almamedia/fargate/acm/mock/client"
+	"github.com/almamedia/fargate/cmd/mock"
 )
 
 func TestCertificateInfoOperation(t *testing.T) {
