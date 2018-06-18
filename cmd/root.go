@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/almamedia/fargate/console"
+	ECS "github.com/almamedia/fargate/ecs"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/almamedia/fargate/console"
-	ECS "github.com/almamedia/fargate/ecs"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -161,7 +161,7 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
-	rootCmd.PersistentFlags().StringVar(&region, "region", "", `AWS region (default "us-east-1")`)
+	rootCmd.PersistentFlags().StringVar(&region, "region", "", `AWS region (default "eu-west-1")`)
 	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Disable color output")
 	rootCmd.PersistentFlags().StringVar(&clusterName, "cluster", "", `ECS cluster name (default "fargate")`)
 
