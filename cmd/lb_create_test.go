@@ -6,12 +6,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/jpignata/fargate/acm"
-	acmclient "github.com/jpignata/fargate/acm/mock/client"
-	"github.com/jpignata/fargate/cmd/mock"
-	ec2client "github.com/jpignata/fargate/ec2/mock/client"
-	"github.com/jpignata/fargate/elbv2"
-	elbv2client "github.com/jpignata/fargate/elbv2/mock/client"
+	"github.com/almamedia/fargate/acm"
+	acmclient "github.com/almamedia/fargate/acm/mock/client"
+	"github.com/almamedia/fargate/cmd/mock"
+	ec2client "github.com/almamedia/fargate/ec2/mock/client"
+	"github.com/almamedia/fargate/elbv2"
+	elbv2client "github.com/almamedia/fargate/elbv2/mock/client"
 )
 
 var (

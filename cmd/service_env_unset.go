@@ -3,8 +3,8 @@ package cmd
 import (
 	"strings"
 
-	"github.com/jpignata/fargate/console"
-	ECS "github.com/jpignata/fargate/ecs"
+	"github.com/almamedia/fargate/console"
+	ECS "github.com/almamedia/fargate/ecs"
 	"github.com/spf13/cobra"
 )
 

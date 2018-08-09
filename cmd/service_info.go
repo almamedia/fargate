@@ -7,11 +7,11 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	ACM "github.com/jpignata/fargate/acm"
-	"github.com/jpignata/fargate/console"
-	EC2 "github.com/jpignata/fargate/ec2"
-	ECS "github.com/jpignata/fargate/ecs"
-	ELBV2 "github.com/jpignata/fargate/elbv2"
+	ACM "github.com/almamedia/fargate/acm"
+	"github.com/almamedia/fargate/console"
+	EC2 "github.com/almamedia/fargate/ec2"
+	ECS "github.com/almamedia/fargate/ecs"
+	ELBV2 "github.com/almamedia/fargate/elbv2"
 	"github.com/spf13/cobra"
 )
 
