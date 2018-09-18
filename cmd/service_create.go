@@ -367,15 +367,16 @@ func createService(operation *ServiceCreateOperation) {
 
 	ecs.CreateService(
 		&ECS.CreateServiceInput{
-			Cluster:               clusterName,
-			DesiredCount:          operation.Num,
-			Name:                  operation.ServiceName,
-			Port:                  operation.Port.Number,
-			SecurityGroupIds:      operation.SecurityGroupIds,
-			SubnetIds:             operation.SubnetIds,
-			TargetGroupArn:        targetGroupArn,
-			TaskDefinitionArn:     taskDefinitionArn,
-			AssignPublicIpEnabled: operation.AssignPublicIPEnabled,
+			Cluster:                       clusterName,
+			DesiredCount:                  operation.Num,
+			Name:                          operation.ServiceName,
+			Port:                          operation.Port.Number,
+			SecurityGroupIds:              operation.SecurityGroupIds,
+			SubnetIds:                     operation.SubnetIds,
+			TargetGroupArn:                targetGroupArn,
+			TaskDefinitionArn:             taskDefinitionArn,
+			AssignPublicIpEnabled:         operation.AssignPublicIPEnabled,
+			HealthCheckGracePeriodSeconds: operation.HealthCheckGracePeriodSeconds,
 		},
 	)
 
