@@ -20,20 +20,21 @@ import (
 const typeService = "service"
 
 type ServiceCreateOperation struct {
-	Cpu                   string
-	EnvVars               []ECS.EnvVar
-	Image                 string
-	LoadBalancerArn       string
-	LoadBalancerName      string
-	Memory                string
-	Num                   int64
-	Port                  Port
-	Rules                 []ELBV2.Rule
-	SecurityGroupIds      []string
-	ServiceName           string
-	SubnetIds             []string
-	TaskRole              string
-	AssignPublicIPEnabled bool
+	Cpu                           string
+	EnvVars                       []ECS.EnvVar
+	Image                         string
+	LoadBalancerArn               string
+	LoadBalancerName              string
+	Memory                        string
+	Num                           int64
+	Port                          Port
+	Rules                         []ELBV2.Rule
+	SecurityGroupIds              []string
+	ServiceName                   string
+	SubnetIds                     []string
+	TaskRole                      string
+	AssignPublicIPEnabled         bool
+	HealthCheckGracePeriodSeconds int64
 }
 
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
@@ -149,6 +150,7 @@ var (
 	flagServiceCreateSubnetIds        []string
 	flagServiceCreateTaskRole         string
 	flagServiceAssignPublicIP         bool
+	flagServiceHealthCheckGracePeriod int64
 )
 
 var serviceCreateCmd = &cobra.Command{
@@ -205,6 +207,12 @@ Specify the desired count of tasks the service should maintain by passing the
 --num flag with a number. If you omit this flag, fargate will configure a
 service with a desired number of tasks of 1.
 
+Specify the desired health check grace period in seconds for the service by 
+passing the --health-check-grace-period flag with a number. If you omit this 
+flag, fargate will configure a service with a desired number of tasks of 0. 
+The grace period can prevent the ECS service scheduler from marking tasks as 
+unhealthy and stopping them before they have time to come up.
+
 Security groups can optionally be specified for the service by passing the
 --security-group-id flag with a security group ID. To add multiple security
 groups, pass --security-group-id with a security group ID multiple times. If
@@ -225,15 +233,16 @@ Services can be configured to have only private ip address via the
 	Run: func(cmd *cobra.Command, args []string) {
 
 		operation := &ServiceCreateOperation{
-			Cpu:                   flagServiceCreateCpu,
-			Image:                 flagServiceCreateImage,
-			Memory:                flagServiceCreateMemory,
-			Num:                   flagServiceCreateNum,
-			SecurityGroupIds:      flagServiceCreateSecurityGroupIds,
-			ServiceName:           args[0],
-			SubnetIds:             flagServiceCreateSubnetIds,
-			TaskRole:              flagServiceCreateTaskRole,
-			AssignPublicIPEnabled: flagServiceAssignPublicIP,
+			Cpu:                           flagServiceCreateCpu,
+			Image:                         flagServiceCreateImage,
+			Memory:                        flagServiceCreateMemory,
+			Num:                           flagServiceCreateNum,
+			SecurityGroupIds:              flagServiceCreateSecurityGroupIds,
+			ServiceName:                   args[0],
+			SubnetIds:                     flagServiceCreateSubnetIds,
+			TaskRole:                      flagServiceCreateTaskRole,
+			AssignPublicIPEnabled:         flagServiceAssignPublicIP,
+			HealthCheckGracePeriodSeconds: flagServiceHealthCheckGracePeriod,
 		}
 
 		if flagServiceCreatePort != "" {
@@ -270,7 +279,7 @@ func init() {
 	serviceCreateCmd.Flags().StringSliceVar(&flagServiceCreateSubnetIds, "subnet-id", []string{}, "ID of a subnet in which to place the service (can be specified multiple times)")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateTaskRole, "task-role", "", "", "Name or ARN of an IAM role that the service's tasks can assume")
 	serviceCreateCmd.Flags().BoolVarP(&flagServiceAssignPublicIP, "assign-public-ip", "", true, "Assign public ip address")
-
+	serviceCreateCmd.Flags().Int64VarP(&flagServiceHealthCheckGracePeriod, "health-check-grace-period", "", 0, "Health check grace period in seconds")
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
 

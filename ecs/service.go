@@ -11,15 +11,16 @@ import (
 )
 
 type CreateServiceInput struct {
-	Cluster               string
-	DesiredCount          int64
-	Name                  string
-	Port                  int64
-	SecurityGroupIds      []string
-	SubnetIds             []string
-	TargetGroupArn        string
-	TaskDefinitionArn     string
-	AssignPublicIpEnabled bool
+	Cluster                       string
+	DesiredCount                  int64
+	Name                          string
+	Port                          int64
+	SecurityGroupIds              []string
+	SubnetIds                     []string
+	TargetGroupArn                string
+	TaskDefinitionArn             string
+	AssignPublicIpEnabled         bool
+	HealthCheckGracePeriodSeconds int64
 }
 
 type Service struct {
@@ -74,11 +75,12 @@ func (ecs *ECS) CreateService(input *CreateServiceInput) {
 	}
 
 	createServiceInput := &awsecs.CreateServiceInput{
-		Cluster:        aws.String(input.Cluster),
-		DesiredCount:   aws.Int64(input.DesiredCount),
-		ServiceName:    aws.String(input.Name),
-		TaskDefinition: aws.String(input.TaskDefinitionArn),
-		LaunchType:     aws.String(awsecs.CompatibilityFargate),
+		Cluster:                       aws.String(input.Cluster),
+		DesiredCount:                  aws.Int64(input.DesiredCount),
+		ServiceName:                   aws.String(input.Name),
+		TaskDefinition:                aws.String(input.TaskDefinitionArn),
+		LaunchType:                    aws.String(awsecs.CompatibilityFargate),
+		HealthCheckGracePeriodSeconds: aws.Int64(input.HealthCheckGracePeriodSeconds),
 		NetworkConfiguration: &awsecs.NetworkConfiguration{
 			AwsvpcConfiguration: &awsecs.AwsVpcConfiguration{
 				AssignPublicIp: aws.String(assignPublicIP),
