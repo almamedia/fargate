@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/jpignata/fargate/console"
-	ELBV2 "github.com/jpignata/fargate/elbv2"
+	"github.com/almamedia/fargate/console"
+	ELBV2 "github.com/almamedia/fargate/elbv2"
 	"github.com/spf13/cobra"
 )
 

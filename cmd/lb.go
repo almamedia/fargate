@@ -3,7 +3,7 @@ package cmd
 import (
 	"errors"
 
-	"github.com/jpignata/fargate/elbv2"
+	"github.com/almamedia/fargate/elbv2"
 	"github.com/spf13/cobra"
 )
 

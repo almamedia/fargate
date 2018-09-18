@@ -5,9 +5,9 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/jpignata/fargate/console"
-	EC2 "github.com/jpignata/fargate/ec2"
-	ECS "github.com/jpignata/fargate/ecs"
+	"github.com/almamedia/fargate/console"
+	EC2 "github.com/almamedia/fargate/ec2"
+	ECS "github.com/almamedia/fargate/ecs"
 	"github.com/spf13/cobra"
 )
 
