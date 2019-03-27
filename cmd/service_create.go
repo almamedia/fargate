@@ -35,6 +35,7 @@ type ServiceCreateOperation struct {
 	TaskRole                      string
 	AssignPublicIPEnabled         bool
 	HealthCheckGracePeriodSeconds int64
+	HealthCheckPath               string
 }
 
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
@@ -151,6 +152,7 @@ var (
 	flagServiceCreateTaskRole         string
 	flagServiceAssignPublicIP         bool
 	flagServiceHealthCheckGracePeriod int64
+	flagServiceHealthCheckPath        string
 )
 
 var serviceCreateCmd = &cobra.Command{
@@ -243,6 +245,7 @@ Services can be configured to have only private ip address via the
 			TaskRole:                      flagServiceCreateTaskRole,
 			AssignPublicIPEnabled:         flagServiceAssignPublicIP,
 			HealthCheckGracePeriodSeconds: flagServiceHealthCheckGracePeriod,
+			HealthCheckPath:               flagServiceHealthCheckPath,
 		}
 
 		if flagServiceCreatePort != "" {
@@ -280,6 +283,8 @@ func init() {
 	serviceCreateCmd.Flags().StringVarP(&flagServiceCreateTaskRole, "task-role", "", "", "Name or ARN of an IAM role that the service's tasks can assume")
 	serviceCreateCmd.Flags().BoolVarP(&flagServiceAssignPublicIP, "assign-public-ip", "", true, "Assign public ip address")
 	serviceCreateCmd.Flags().Int64VarP(&flagServiceHealthCheckGracePeriod, "health-check-grace-period", "", 0, "Health check grace period in seconds")
+	serviceCreateCmd.Flags().StringVarP(&flagServiceHealthCheckPath, "health-check-path", "", "/", "Health check path")
+
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
 
@@ -333,10 +338,11 @@ func createService(operation *ServiceCreateOperation) {
 		vpcId, _ := ec2.GetSubnetVPCID(operation.SubnetIds[0])
 		targetGroupArn, _ = elbv2.CreateTargetGroup(
 			ELBV2.CreateTargetGroupParameters{
-				Name:     fmt.Sprintf("%s-%s", clusterName, operation.ServiceName),
-				Port:     operation.Port.Number,
-				Protocol: operation.Port.Protocol,
-				VPCID:    vpcId,
+				Name:       fmt.Sprintf("%s-%s", clusterName, operation.ServiceName),
+				Port:       operation.Port.Number,
+				Protocol:   operation.Port.Protocol,
+				VPCID:      vpcId,
+				HealthPath: operation.HealthCheckPath,
 			},
 		)
 

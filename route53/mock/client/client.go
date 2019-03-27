@@ -5,8 +5,8 @@
 package client
 
 import (
-	gomock "github.com/golang/mock/gomock"
 	route53 "github.com/almamedia/fargate/route53"
+	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
 
