@@ -1,9 +1,9 @@
 package elbv2
 
 import (
+	"github.com/almamedia/fargate/console"
 	"github.com/aws/aws-sdk-go/aws"
 	awselbv2 "github.com/aws/aws-sdk-go/service/elbv2"
-	"github.com/almamedia/fargate/console"
 )
 
 type TargetGroup struct {
@@ -13,20 +13,22 @@ type TargetGroup struct {
 }
 
 type CreateTargetGroupParameters struct {
-	Name     string
-	Port     int64
-	Protocol string
-	VPCID    string
+	Name       string
+	Port       int64
+	Protocol   string
+	VPCID      string
+	HealthPath string
 }
 
 func (elbv2 SDKClient) CreateTargetGroup(i CreateTargetGroupParameters) (string, error) {
 	resp, err := elbv2.client.CreateTargetGroup(
 		&awselbv2.CreateTargetGroupInput{
-			Name:       aws.String(i.Name),
-			Port:       aws.Int64(i.Port),
-			Protocol:   aws.String(i.Protocol),
-			TargetType: aws.String(awselbv2.TargetTypeEnumIp),
-			VpcId:      aws.String(i.VPCID),
+			Name:            aws.String(i.Name),
+			Port:            aws.Int64(i.Port),
+			Protocol:        aws.String(i.Protocol),
+			TargetType:      aws.String(awselbv2.TargetTypeEnumIp),
+			VpcId:           aws.String(i.VPCID),
+			HealthCheckPath: aws.String(i.HealthPath),
 		},
 	)
 
