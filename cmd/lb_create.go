@@ -19,6 +19,7 @@ type lbCreateOperation struct {
 	output   Output
 	ports    []Port
 	vpcOperation
+	healthPath string
 }
 
 func (o *lbCreateOperation) setPorts(inputPorts []string) []error {
@@ -143,10 +144,11 @@ func (o lbCreateOperation) execute() {
 	o.output.Debug("Creating target group [Name=%s]", defaultTargetGroupName)
 	defaultTargetGroupARN, err := o.elbv2.CreateTargetGroup(
 		elbv2.CreateTargetGroupParameters{
-			Name:     defaultTargetGroupName,
-			Port:     o.ports[0].Number,
-			Protocol: o.ports[0].Protocol,
-			VPCID:    o.vpcID,
+			Name:       defaultTargetGroupName,
+			Port:       o.ports[0].Number,
+			Protocol:   o.ports[0].Protocol,
+			VPCID:      o.vpcID,
+			HealthPath: o.healthPath,
 		},
 	)
 
@@ -195,6 +197,7 @@ func newLBCreateOperation(
 		lbScheme:             lbScheme,
 		output:               output,
 		vpcOperation:         vpcOperation{ec2: ec2, output: output},
+		healthPath:           "/",
 	}
 
 	if errs := operation.setPorts(ports); len(errs) > 0 {
