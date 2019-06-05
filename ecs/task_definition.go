@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/almamedia/fargate/console"
 	"github.com/aws/aws-sdk-go/aws"
 	awsecs "github.com/aws/aws-sdk-go/service/ecs"
-	"github.com/almamedia/fargate/console"
 )
 
-const logStreamPrefix = "fargate"
+const (
+	logStreamPrefix = "fargate"
+	minimumUlimit   = 1024
+	defaultUlimit   = 10240
+)
 
 var taskDefinitionCache = make(map[string]*awsecs.TaskDefinition)
 
@@ -25,6 +29,7 @@ type CreateTaskDefinitionInput struct {
 	LogRegion        string
 	TaskRole         string
 	Type             string
+	ContainerUlimit  int64
 }
 
 type EnvVar struct {
@@ -61,6 +66,17 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 			},
 		)
 	}
+
+	if input.ContainerUlimit < minimumUlimit {
+		input.ContainerUlimit = defaultUlimit
+	}
+
+	ulimit := &awsecs.Ulimit{
+		Name:      aws.String("nofile"),
+		SoftLimit: aws.Int64(input.ContainerUlimit),
+		HardLimit: aws.Int64(input.ContainerUlimit),
+	}
+	containerDefinition.SetUlimits([]*awsecs.Ulimit{ulimit})
 
 	resp, err := ecs.svc.RegisterTaskDefinition(
 		&awsecs.RegisterTaskDefinitionInput{
@@ -235,7 +251,7 @@ func (ecs *ECS) GetEnvVarsFromTaskDefinition(taskDefinitionArn string) []EnvVar 
 	return envVars
 }
 
-func (ecs *ECS) UpdateTaskDefinitionCpuAndMemory(taskDefinitionArn, cpu, memory string) string {
+func (ecs *ECS) UpdateTaskDefinitionCpuMemoryAndUlimit(taskDefinitionArn, cpu, memory string, ulimit int64) string {
 	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
 
 	if cpu != "" {
@@ -244,6 +260,17 @@ func (ecs *ECS) UpdateTaskDefinitionCpuAndMemory(taskDefinitionArn, cpu, memory 
 
 	if memory != "" {
 		taskDefinition.Memory = aws.String(memory)
+	}
+
+	if ulimit > 0 {
+		ulimit := &awsecs.Ulimit{
+			Name:      aws.String("nofile"),
+			SoftLimit: aws.Int64(ulimit),
+			HardLimit: aws.Int64(ulimit),
+		}
+		for _, containerDefinition := range taskDefinition.ContainerDefinitions {
+			containerDefinition.SetUlimits([]*awsecs.Ulimit{ulimit})
+		}
 	}
 
 	resp, err := ecs.svc.RegisterTaskDefinition(
