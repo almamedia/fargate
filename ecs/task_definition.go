@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/almamedia/fargate/console"
 	"github.com/aws/aws-sdk-go/aws"
 	awsecs "github.com/aws/aws-sdk-go/service/ecs"
-	"github.com/almamedia/fargate/console"
 )
 
 const logStreamPrefix = "fargate"
@@ -25,6 +25,7 @@ type CreateTaskDefinitionInput struct {
 	LogRegion        string
 	TaskRole         string
 	Type             string
+	ContainerUlimit  int64
 }
 
 type EnvVar struct {
@@ -60,6 +61,15 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 				},
 			},
 		)
+	}
+
+	if input.ContainerUlimit > 0 {
+		ulimit := &awsecs.Ulimit{
+			Name:      aws.String("ulimit-" + input.Name),
+			SoftLimit: aws.Int64(input.ContainerUlimit),
+			HardLimit: aws.Int64(input.ContainerUlimit),
+		}
+		containerDefinition.SetUlimits([]*awsecs.Ulimit{ulimit})
 	}
 
 	resp, err := ecs.svc.RegisterTaskDefinition(

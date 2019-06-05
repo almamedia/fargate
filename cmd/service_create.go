@@ -36,6 +36,7 @@ type ServiceCreateOperation struct {
 	AssignPublicIPEnabled         bool
 	HealthCheckGracePeriodSeconds int64
 	HealthCheckPath               string
+	ContainerUlimit               int64
 }
 
 func (o *ServiceCreateOperation) SetPort(inputPort string) {
@@ -153,6 +154,7 @@ var (
 	flagServiceAssignPublicIP         bool
 	flagServiceHealthCheckGracePeriod int64
 	flagServiceHealthCheckPath        string
+	flagServiceUlimit                 int64
 )
 
 var serviceCreateCmd = &cobra.Command{
@@ -230,7 +232,10 @@ eith a full IAM role ARN or the name of an IAM role. The tasks run by the
 service will be able to assume this role.
 
 Services can be configured to have only private ip address via the
---assign-public-ip=false flag.`,
+--assign-public-ip=false flag.
+
+Container ulimit can be set via the --ulimit flag with a positive number.  If you omit this 
+flag, fargate will configure a service with a default ulimits`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -246,6 +251,7 @@ Services can be configured to have only private ip address via the
 			AssignPublicIPEnabled:         flagServiceAssignPublicIP,
 			HealthCheckGracePeriodSeconds: flagServiceHealthCheckGracePeriod,
 			HealthCheckPath:               flagServiceHealthCheckPath,
+			ContainerUlimit:               flagServiceUlimit,
 		}
 
 		if flagServiceCreatePort != "" {
@@ -284,6 +290,7 @@ func init() {
 	serviceCreateCmd.Flags().BoolVarP(&flagServiceAssignPublicIP, "assign-public-ip", "", true, "Assign public ip address")
 	serviceCreateCmd.Flags().Int64VarP(&flagServiceHealthCheckGracePeriod, "health-check-grace-period", "", 0, "Health check grace period in seconds")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceHealthCheckPath, "health-check-path", "", "/", "Health check path")
+	serviceCreateCmd.Flags().Int64VarP(&flagServiceUlimit, "ulimit", "", 0, "Container ulimit")
 
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
@@ -368,6 +375,7 @@ func createService(operation *ServiceCreateOperation) {
 			LogRegion:        region,
 			TaskRole:         operation.TaskRole,
 			Type:             typeService,
+			ContainerUlimit:  operation.ContainerUlimit,
 		},
 	)
 
