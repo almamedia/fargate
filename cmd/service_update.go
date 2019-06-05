@@ -12,14 +12,15 @@ type ServiceUpdateOperation struct {
 	ServiceName string
 	Cpu         string
 	Memory      string
+	Ulimit      int64
 	Service     ECS.Service
 }
 
 func (o *ServiceUpdateOperation) Validate() {
 	ecs := ECS.New(sess, clusterName)
 
-	if o.Cpu == "" && o.Memory == "" {
-		console.ErrorExit(fmt.Errorf("--cpu and/or --memory must be supplied"), "Invalid command line arguments")
+	if o.Cpu == "" && o.Memory == "" && o.Ulimit == 0 {
+		console.ErrorExit(fmt.Errorf("--cpu and/or --memory and/or --ulimit must be supplied"), "Invalid command line arguments")
 	}
 
 	o.Service = ecs.DescribeService(o.ServiceName)
@@ -43,10 +44,11 @@ func (o *ServiceUpdateOperation) Validate() {
 var (
 	flagServiceUpdateCpu    string
 	flagServiceUpdateMemory string
+	flagServiceUpdateUlimit int64
 )
 
 var serviceUpdateCmd = &cobra.Command{
-	Use:   "update <service-name> --cpu <cpu-units> | --memory <MiB>",
+	Use:   "update <service-name> --cpu <cpu-units> | --memory <MiB> | --ulimit <nofile>",
 	Short: "Update service configuration",
 	Long: `Update service configuration
 
@@ -63,13 +65,14 @@ configurations:
 | 2048            | 4096 through 16384 in 1GiB increments |
 | 4096            | 8192 through 30720 in 1GiB increments |
 
-At least one of --cpu or --memory must be specified.`,
+At least one of --cpu or --memory or --ulimit must be specified.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		operation := &ServiceUpdateOperation{
 			ServiceName: args[0],
 			Cpu:         flagServiceUpdateCpu,
 			Memory:      flagServiceUpdateMemory,
+			Ulimit:      flagServiceUpdateUlimit,
 		}
 
 		operation.Validate()
@@ -83,17 +86,18 @@ func init() {
 
 	serviceUpdateCmd.Flags().StringVarP(&flagServiceUpdateCpu, "cpu", "c", "", "Amount of cpu units to allocate for each task")
 	serviceUpdateCmd.Flags().StringVarP(&flagServiceUpdateMemory, "memory", "m", "", "Amount of MiB to allocate for each task")
+	serviceUpdateCmd.Flags().Int64VarP(&flagServiceUpdateUlimit, "ulimit", "u", 0, "Nofile ulimit for each task")
 }
 
 func updateService(operation *ServiceUpdateOperation) {
 	ecs := ECS.New(sess, clusterName)
 
-	newTaskDefinitionArn := ecs.UpdateTaskDefinitionCpuAndMemory(
+	newTaskDefinitionArn := ecs.UpdateTaskDefinitionCpuMemoryAndUlimit(
 		operation.Service.TaskDefinitionArn,
 		operation.Cpu,
 		operation.Memory,
-	)
+		operation.Ulimit)
 
 	ecs.UpdateServiceTaskDefinition(operation.ServiceName, newTaskDefinitionArn)
-	console.Info("Updated service %s to %s CPU units / %s MiB", operation.ServiceName, operation.Cpu, operation.Memory)
+	console.Info("Updated service %s to %s CPU units / %s MiB / %d nofile", operation.ServiceName, operation.Cpu, operation.Memory, operation.Ulimit)
 }

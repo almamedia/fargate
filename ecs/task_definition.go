@@ -245,7 +245,7 @@ func (ecs *ECS) GetEnvVarsFromTaskDefinition(taskDefinitionArn string) []EnvVar 
 	return envVars
 }
 
-func (ecs *ECS) UpdateTaskDefinitionCpuAndMemory(taskDefinitionArn, cpu, memory string) string {
+func (ecs *ECS) UpdateTaskDefinitionCpuMemoryAndUlimit(taskDefinitionArn, cpu, memory string, ulimit int64) string {
 	taskDefinition := ecs.DescribeTaskDefinition(taskDefinitionArn)
 
 	if cpu != "" {
@@ -254,6 +254,17 @@ func (ecs *ECS) UpdateTaskDefinitionCpuAndMemory(taskDefinitionArn, cpu, memory 
 
 	if memory != "" {
 		taskDefinition.Memory = aws.String(memory)
+	}
+
+	if ulimit > 0 {
+		ulimit := &awsecs.Ulimit{
+			Name:      aws.String("nofile"),
+			SoftLimit: aws.Int64(ulimit),
+			HardLimit: aws.Int64(ulimit),
+		}
+		for _, containerDefinition := range taskDefinition.ContainerDefinitions {
+			containerDefinition.SetUlimits([]*awsecs.Ulimit{ulimit})
+		}
 	}
 
 	resp, err := ecs.svc.RegisterTaskDefinition(
