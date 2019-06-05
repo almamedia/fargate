@@ -86,7 +86,7 @@ func init() {
 
 	serviceUpdateCmd.Flags().StringVarP(&flagServiceUpdateCpu, "cpu", "c", "", "Amount of cpu units to allocate for each task")
 	serviceUpdateCmd.Flags().StringVarP(&flagServiceUpdateMemory, "memory", "m", "", "Amount of MiB to allocate for each task")
-	serviceUpdateCmd.Flags().Int64VarP(&flagServiceUpdateUlimit, "ulimit", "u", 0, "Nofile ulimit for each task")
+	serviceUpdateCmd.Flags().Int64VarP(&flagServiceUpdateUlimit, "ulimit", "u", defaultUlimit, "Nofile ulimit for each task")
 }
 
 func updateService(operation *ServiceUpdateOperation) {

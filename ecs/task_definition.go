@@ -9,7 +9,11 @@ import (
 	awsecs "github.com/aws/aws-sdk-go/service/ecs"
 )
 
-const logStreamPrefix = "fargate"
+const (
+	logStreamPrefix = "fargate"
+	minimumUlimit   = 1024
+	defaultUlimit   = 10240
+)
 
 var taskDefinitionCache = make(map[string]*awsecs.TaskDefinition)
 
@@ -63,14 +67,16 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 		)
 	}
 
-	if input.ContainerUlimit > 0 {
-		ulimit := &awsecs.Ulimit{
-			Name:      aws.String("nofile"),
-			SoftLimit: aws.Int64(input.ContainerUlimit),
-			HardLimit: aws.Int64(input.ContainerUlimit),
-		}
-		containerDefinition.SetUlimits([]*awsecs.Ulimit{ulimit})
+	if input.ContainerUlimit < minimumUlimit {
+		input.ContainerUlimit = defaultUlimit
 	}
+
+	ulimit := &awsecs.Ulimit{
+		Name:      aws.String("nofile"),
+		SoftLimit: aws.Int64(input.ContainerUlimit),
+		HardLimit: aws.Int64(input.ContainerUlimit),
+	}
+	containerDefinition.SetUlimits([]*awsecs.Ulimit{ulimit})
 
 	resp, err := ecs.svc.RegisterTaskDefinition(
 		&awsecs.RegisterTaskDefinitionInput{

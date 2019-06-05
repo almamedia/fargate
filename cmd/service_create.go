@@ -290,7 +290,7 @@ func init() {
 	serviceCreateCmd.Flags().BoolVarP(&flagServiceAssignPublicIP, "assign-public-ip", "", true, "Assign public ip address")
 	serviceCreateCmd.Flags().Int64VarP(&flagServiceHealthCheckGracePeriod, "health-check-grace-period", "", 0, "Health check grace period in seconds")
 	serviceCreateCmd.Flags().StringVarP(&flagServiceHealthCheckPath, "health-check-path", "", "/", "Health check path")
-	serviceCreateCmd.Flags().Int64VarP(&flagServiceUlimit, "ulimit", "", 0, "Container ulimit")
+	serviceCreateCmd.Flags().Int64VarP(&flagServiceUlimit, "ulimit", "", defaultUlimit, "Container ulimit")
 
 	serviceCmd.AddCommand(serviceCreateCmd)
 }
