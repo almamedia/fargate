@@ -65,7 +65,7 @@ func (ecs *ECS) CreateTaskDefinition(input *CreateTaskDefinitionInput) string {
 
 	if input.ContainerUlimit > 0 {
 		ulimit := &awsecs.Ulimit{
-			Name:      aws.String("ulimit-" + input.Name),
+			Name:      aws.String("nofile"),
 			SoftLimit: aws.Int64(input.ContainerUlimit),
 			HardLimit: aws.Int64(input.ContainerUlimit),
 		}
